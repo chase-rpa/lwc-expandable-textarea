@@ -1,0 +1,27 @@
+.configurable-textarea {
+    width: 100%;
+}
+
+.auto-expand {
+    overflow: hidden;
+    resize: none;
+}
+
+.configurable-textarea {
+    --slds-c-textarea-sizing-min-height: 100px;
+    --slds-c-textarea-sizing-height: 200px;
+}
+
+.slds-box {
+    padding: 0;
+}
+
+@media (max-width: 768px) {
+    .configurable-textarea {
+        --slds-c-textarea-sizing-min-height: 80px;
+    }
+}
+
+lightning-textarea[disabled] {
+    background-color: #f3f3f3;
+}

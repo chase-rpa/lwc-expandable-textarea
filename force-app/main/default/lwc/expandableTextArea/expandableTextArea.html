@@ -1,0 +1,52 @@
+<template>
+    <div class="slds-box slds-box_x-small">
+        <template if:false={isLoading}>
+            <template if:true={recordId}>
+                <lightning-record-edit-form 
+                    object-api-name={objectApiName}
+                    record-id={recordId}>
+                    
+                    <lightning-textarea
+                        name={fieldApiName}
+                        label={displayLabel}
+                        value={currentValue}
+                        required={isRequired}
+                        disabled={readOnly}
+                        max-length={maxLengthValue}
+                        class={textareaClass}
+                        onchange={handleChange}
+                        onblur={handleBlur}>
+                    </lightning-textarea>
+                    
+                </lightning-record-edit-form>
+            </template>
+            
+            <template if:false={recordId}>
+                <lightning-textarea
+                    name={fieldApiName}
+                    label={displayLabel}
+                    value={fieldValue}
+                    required={isRequired}
+                    disabled={readOnly}
+                    max-length={maxLengthValue}
+                    class={textareaClass}
+                    onchange={handleChange}
+                    onblur={handleBlur}>
+                </lightning-textarea>
+            </template>
+        </template>
+        
+        <template if:true={isLoading}>
+            <lightning-spinner 
+                alternative-text="Loading..." 
+                size="small">
+            </lightning-spinner>
+        </template>
+        
+        <template if:true={error}>
+            <div class="slds-text-color_error slds-m-top_small">
+                Error: {error.body.message}
+            </div>
+        </template>
+    </div>
+</template>
