@@ -3,7 +3,7 @@
         <template if:false={isLoading}>
             <template if:true={recordId}>
                 <div class={formElementClass}>
-                    <template if:true={showLabel}>
+                    <template if:false={hideLabel}>
                         <label class="slds-form-element__label" for="textarea-with-record">
                             <template if:true={isRequired}>
                                 <abbr class="slds-required" title="required">*</abbr>
@@ -34,7 +34,7 @@
             
             <template if:false={recordId}>
                 <div class={formElementClass}>
-                    <template if:true={showLabel}>
+                    <template if:false={hideLabel}>
                         <label class="slds-form-element__label" for="textarea-flow">
                             <template if:true={isRequired}>
                                 <abbr class="slds-required" title="required">*</abbr>
