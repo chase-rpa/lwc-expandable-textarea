@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>60.0</apiVersion>
+    <isExposed>true</isExposed>
+    <masterLabel>Expandable Text Area</masterLabel>
+    <description>Displays any text field with configurable height for Lightning pages and Flows</description>
+    
+    <targets>
+        <target>lightning__RecordPage</target>
+        <target>lightning__AppPage</target>
+        <target>lightning__HomePage</target>
+        <target>lightning__FlowScreen</target>
+        <target>lightningCommunity__Page</target>
+        <target>lightningCommunity__Default</target>
+    </targets>
+    
+    <targetConfigs>
+        <targetConfig targets="lightning__RecordPage,lightning__AppPage,lightning__HomePage">
+            <property 
+                name="fieldApiName" 
+                type="String" 
+                label="Field API Name" 
+                description="The API name of the text field to display (e.g., Description__c)"
+                required="true"
+                placeholder="Description__c"/>
+            
+            <property 
+                name="label" 
+                type="String" 
+                label="Custom Label" 
+                description="Override the field's default label (leave blank to use field label)"/>
+            
+            <property 
+                name="initialHeight" 
+                type="Integer" 
+                label="Initial Height (pixels)" 
+                description="Initial height of the text area"
+                default="200"
+                min="50"
+                max="1000"/>
+            
+            <property 
+                name="minHeight" 
+                type="Integer" 
+                label="Minimum Height (pixels)" 
+                description="Minimum height when auto-expanding"
+                default="100"
+                min="50"
+                max="500"/>
+            
+            <property 
+                name="maxHeight" 
+                type="Integer" 
+                label="Maximum Height (pixels)" 
+                description="Maximum height (0 for unlimited)"
+                default="0"
+                min="0"
+                max="2000"/>
+            
+            <property 
+                name="autoExpand" 
+                type="Boolean" 
+                label="Auto-Expand" 
+                description="Automatically expand height as content grows"
+                default="true"/>
+            
+            <property 
+                name="readOnly" 
+                type="Boolean" 
+                label="Read-Only" 
+                description="Display field as read-only"
+                default="false"/>
+            
+            <property 
+                name="showLabel" 
+                type="Boolean" 
+                label="Show Label" 
+                description="Display the field label"
+                default="true"/>
+            
+            <property 
+                name="required" 
+                type="Boolean" 
+                label="Required Override" 
+                description="Override field's required setting"
+                default="false"/>
+        </targetConfig>
+        
+        <targetConfig targets="lightning__FlowScreen">
+            <property 
+                name="recordId" 
+                type="String" 
+                label="Record ID" 
+                description="The ID of the record containing the field"
+                role="inputOnly"
+                required="true"/>
+            
+            <property 
+                name="objectApiName" 
+                type="String" 
+                label="Object API Name" 
+                description="The API name of the object (e.g., Account, CustomObject__c)"
+                role="inputOnly"
+                required="true"
+                placeholder="Account"/>
+            
+            <property 
+                name="fieldApiName" 
+                type="String" 
+                label="Field API Name" 
+                description="The API name of the field to display"
+                role="inputOnly"
+                required="true"
+                placeholder="Description__c"/>
+            
+            <property
+                name="fieldValue"
+                type="String"
+                label="Field Value"
+                description="Current value of the field (input/output)"/>
+            
+            <property 
+                name="label" 
+                type="String" 
+                label="Field Label" 
+                description="Label to display above the field"
+                role="inputOnly"/>
+            
+            <property 
+                name="initialHeight" 
+                type="Integer" 
+                label="Initial Height (pixels)" 
+                description="Initial height of the text area"
+                default="200"
+                role="inputOnly"/>
+            
+            <property 
+                name="minHeight" 
+                type="Integer" 
+                label="Minimum Height (pixels)" 
+                description="Minimum height when auto-expanding"
+                default="100"
+                role="inputOnly"/>
+            
+            <property 
+                name="maxHeight" 
+                type="Integer" 
+                label="Maximum Height (pixels)" 
+                description="Maximum height (0 for unlimited)"
+                default="0"
+                role="inputOnly"/>
+            
+            <property 
+                name="autoExpand" 
+                type="Boolean" 
+                label="Auto-Expand" 
+                description="Automatically expand height as content grows"
+                default="true"
+                role="inputOnly"/>
+            
+            <property 
+                name="readOnly" 
+                type="Boolean" 
+                label="Read-Only" 
+                description="Display field as read-only"
+                default="false"
+                role="inputOnly"/>
+            
+            <property 
+                name="showLabel" 
+                type="Boolean" 
+                label="Show Label" 
+                description="Display the field label"
+                default="true"
+                role="inputOnly"/>
+            
+            <property 
+                name="isValid" 
+                type="Boolean" 
+                label="Is Valid" 
+                description="Validation state of the field"
+                role="outputOnly"/>
+        </targetConfig>
+        
+    </targetConfigs>
+</LightningComponentBundle>

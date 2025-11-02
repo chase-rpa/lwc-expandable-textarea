@@ -1,0 +1,62 @@
+{
+  "name": "lwc-expandable-textarea",
+  "version": "1.0.0",
+  "description": "Configurable text area component that solves Salesforce's 3-line limitation",
+  "author": "Redpoint Ascent <hello@redpoint-ascent.ai>",
+  "license": "MIT",
+  "homepage": "https://github.com/redpoint-ascent/lwc-expandable-textarea#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/redpoint-ascent/lwc-expandable-textarea.git"
+  },
+  "bugs": {
+    "url": "https://github.com/redpoint-ascent/lwc-expandable-textarea/issues"
+  },
+  "keywords": [
+    "salesforce",
+    "lightning-web-components",
+    "lwc",
+    "text-area",
+    "flow",
+    "user-experience",
+    "salesforce-lightning"
+  ],
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "scripts": {
+    "lint": "eslint **/lwc/**/*.js",
+    "test:unit": "sfdx-lwc-jest",
+    "test:unit:watch": "sfdx-lwc-jest --watch",
+    "test:unit:debug": "sfdx-lwc-jest --debug",
+    "test:unit:coverage": "sfdx-lwc-jest --coverage",
+    "prettier": "prettier --write \"**/*.{cls,cmp,component,css,html,js,json,md,page,trigger,xml,yaml,yml}\"",
+    "prettier:verify": "prettier --check \"**/*.{cls,cmp,component,css,html,js,json,md,page,trigger,xml,yaml,yml}\"",
+    "postinstall": "husky install",
+    "precommit": "lint-staged"
+  },
+  "devDependencies": {
+    "@lwc/eslint-plugin-lwc": "^2.0.0",
+    "@prettier/plugin-xml": "^3.2.2",
+    "@salesforce/eslint-config-lwc": "^3.7.2",
+    "@salesforce/eslint-plugin-aura": "^2.1.0",
+    "@salesforce/eslint-plugin-lightning": "^1.0.0",
+    "@salesforce/sfdx-lwc-jest": "^4.0.0",
+    "eslint": "^8.53.0",
+    "eslint-plugin-import": "^2.29.0",
+    "eslint-plugin-jest": "^27.6.0",
+    "husky": "^8.0.3",
+    "lint-staged": "^15.1.0",
+    "prettier": "^3.1.0",
+    "prettier-plugin-apex": "^2.0.1"
+  },
+  "lint-staged": {
+    "**/*.{cls,cmp,component,css,html,js,json,md,page,trigger,xml,yaml,yml}": [
+      "prettier --write"
+    ],
+    "**/lwc/**/*.js": [
+      "eslint"
+    ]
+  }
+}

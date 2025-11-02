@@ -1,0 +1,80 @@
+<template>
+    <div class="expandable-textarea-container">
+        <template if:false={isLoading}>
+            <template if:true={recordId}>
+                <div class={formElementClass}>
+                    <template if:true={showLabel}>
+                        <label class="slds-form-element__label" for="textarea-with-record">
+                            <template if:true={isRequired}>
+                                <abbr class="slds-required" title="required">*</abbr>
+                            </template>
+                            {displayLabel}
+                        </label>
+                    </template>
+                    <div class="slds-form-element__control">
+                        <textarea
+                            id="textarea-with-record"
+                            class="slds-textarea"
+                            data-id="expandable-textarea"
+                            disabled={isReadOnlyComputed}
+                            maxlength={maxLengthValue}
+                            required={isRequired}
+                            aria-label={computedAriaLabel}
+                            aria-invalid={isInvalid}
+                            aria-describedby={computedAriaDescribedBy}
+                            oninput={handleInput}
+                            onchange={handleChange}
+                            onblur={handleBlur}>{currentValue}</textarea>
+                    </div>
+                    <template if:true={hasError}>
+                        <div id="error-with-record" class="slds-form-element__help">{computedErrorMessage}</div>
+                    </template>
+                </div>
+            </template>
+            
+            <template if:false={recordId}>
+                <div class={formElementClass}>
+                    <template if:true={showLabel}>
+                        <label class="slds-form-element__label" for="textarea-flow">
+                            <template if:true={isRequired}>
+                                <abbr class="slds-required" title="required">*</abbr>
+                            </template>
+                            {displayLabel}
+                        </label>
+                    </template>
+                    <div class="slds-form-element__control">
+                        <textarea
+                            id="textarea-flow"
+                            class="slds-textarea"
+                            data-id="expandable-textarea-flow"
+                            disabled={isReadOnlyComputed}
+                            maxlength={maxLengthValue}
+                            required={isRequired}
+                            aria-label={computedAriaLabel}
+                            aria-invalid={isInvalid}
+                            aria-describedby={computedAriaDescribedBy}
+                            oninput={handleInput}
+                            onchange={handleChange}
+                            onblur={handleBlur}>{fieldValue}</textarea>
+                    </div>
+                    <template if:true={hasError}>
+                        <div id="error-flow" class="slds-form-element__help">{computedErrorMessage}</div>
+                    </template>
+                </div>
+            </template>
+        </template>
+        
+        <template if:true={isLoading}>
+            <lightning-spinner
+                alternative-text="Loading..."
+                size="small">
+            </lightning-spinner>
+        </template>
+        
+        <template if:true={error}>
+            <div class="slds-text-color_error slds-m-top_small">
+                Error: {error.body.message}
+            </div>
+        </template>
+    </div>
+</template>
