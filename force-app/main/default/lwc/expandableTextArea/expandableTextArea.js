@@ -18,7 +18,7 @@ export default class ExpandableTextArea extends LightningElement {
     @api maxHeight = 0;
     @api autoExpand = false;
     @api readOnly = false;
-    @api showLabel;
+    @api hideLabel = false;
     @api required = false;
     
     @api availableActions = [];
@@ -281,14 +281,14 @@ export default class ExpandableTextArea extends LightningElement {
     }
     
     get displayLabel() {
-        return this.showLabel ? (this.fieldLabel || this.label || 'Field') : '';
+        return !this.hideLabel ? (this.fieldLabel || this.label || 'Field') : '';
     }
     
     get computedAriaLabel() {
         if (this.ariaLabel) {
             return this.ariaLabel;
         }
-        return !this.showLabel ? (this.fieldLabel || this.label || 'Field') : undefined;
+        return this.hideLabel ? (this.fieldLabel || this.label || 'Field') : undefined;
     }
     
     get isReadOnlyComputed() {

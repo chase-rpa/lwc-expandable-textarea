@@ -1,0 +1,19 @@
+# Code Owners for LWC Expandable Textarea
+# These owners will be requested for review when someone opens a pull request.
+
+# Global owners - own everything by default
+* @chase-rpa
+
+# Component files - require review from component specialists
+/force-app/main/default/lwc/ @chase-rpa
+
+# Documentation - can be reviewed by documentation team
+*.md @chase-rpa
+/docs/ @chase-rpa
+
+# GitHub workflows and actions
+/.github/ @chase-rpa
+
+# Configuration files
+*.json @chase-rpa
+*.xml @chase-rpa
