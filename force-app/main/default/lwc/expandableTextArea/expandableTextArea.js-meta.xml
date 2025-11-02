@@ -78,6 +78,13 @@
                 description="Hide the field label (label shows by default)"
                 default="false"/>
             
+            <property
+                name="showLabel"
+                type="Boolean"
+                label="Show Label (Legacy)"
+                description="Show the field label (deprecated: use Hide Label instead)"
+                default="true"/>
+            
             <property 
                 name="required" 
                 type="Boolean" 
@@ -172,6 +179,14 @@
                 label="Hide Label"
                 description="Hide the field label (label shows by default)"
                 default="false"
+                role="inputOnly"/>
+            
+            <property
+                name="showLabel"
+                type="Boolean"
+                label="Show Label (Legacy)"
+                description="Show the field label (deprecated: use Hide Label instead)"
+                default="true"
                 role="inputOnly"/>
             
             <property 

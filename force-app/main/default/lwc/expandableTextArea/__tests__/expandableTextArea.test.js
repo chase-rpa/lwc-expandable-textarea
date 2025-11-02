@@ -25,8 +25,9 @@ describe('c-expandable-text-area', () => {
         document.body.appendChild(element);
 
         return Promise.resolve().then(() => {
-            const textarea = element.shadowRoot.querySelector('lightning-textarea');
+            const textarea = element.shadowRoot.querySelector('textarea[data-id^="expandable-textarea"]');
             expect(textarea).toBeTruthy();
+            expect(textarea.style.height).toBe(`${element.initialHeight}px`);
         });
     });
 
@@ -35,12 +36,13 @@ describe('c-expandable-text-area', () => {
             is: ExpandableTextArea
         });
         element.label = 'Custom Field Label';
-        element.showLabel = true;
+        element.hideLabel = false;
         document.body.appendChild(element);
 
         return Promise.resolve().then(() => {
-            const textarea = element.shadowRoot.querySelector('lightning-textarea');
-            expect(textarea.label).toBe('Custom Field Label');
+            const label = element.shadowRoot.querySelector('label.slds-form-element__label');
+            expect(label).toBeTruthy();
+            expect(label.textContent.trim()).toContain('Custom Field Label');
         });
     });
 
@@ -50,13 +52,13 @@ describe('c-expandable-text-area', () => {
         });
         document.body.appendChild(element);
 
-        const textarea = element.shadowRoot.querySelector('lightning-textarea');
-        textarea.value = 'Test value';
-        textarea.dispatchEvent(new CustomEvent('change', {
-            detail: { value: 'Test value' }
-        }));
-
         return Promise.resolve().then(() => {
+            const textarea = element.shadowRoot.querySelector('textarea[data-id^="expandable-textarea"]');
+            textarea.value = 'Test value';
+            textarea.dispatchEvent(new CustomEvent('input', { bubbles: true }));
+
+            return Promise.resolve();
+        }).then(() => {
             expect(element.fieldValue).toBe('Test value');
         });
     });
@@ -83,5 +85,67 @@ describe('c-expandable-text-area', () => {
             const spinner = element.shadowRoot.querySelector('lightning-spinner');
             expect(spinner).toBeFalsy();
         });
+    });
+
+    it('hideLabel hides the label', () => {
+        const element = createElement('c-expandable-text-area', {
+            is: ExpandableTextArea
+        });
+        element.label = 'Test Label';
+        element.hideLabel = true;
+        document.body.appendChild(element);
+
+        return Promise.resolve().then(() => {
+            const label = element.shadowRoot.querySelector('label.slds-form-element__label');
+            expect(label).toBeFalsy();
+        });
+    });
+
+    it('showLabel shows the label (backward compatibility)', () => {
+        const element = createElement('c-expandable-text-area', {
+            is: ExpandableTextArea
+        });
+        element.label = 'Test Label';
+        element.showLabel = true;
+        document.body.appendChild(element);
+
+        return Promise.resolve().then(() => {
+            const label = element.shadowRoot.querySelector('label.slds-form-element__label');
+            expect(label).toBeTruthy();
+            expect(label.textContent.trim()).toContain('Test Label');
+        });
+    });
+
+    it('showLabel=false hides the label (backward compatibility)', () => {
+        const element = createElement('c-expandable-text-area', {
+            is: ExpandableTextArea
+        });
+        element.label = 'Test Label';
+        element.showLabel = false;
+        document.body.appendChild(element);
+
+        return Promise.resolve().then(() => {
+            const label = element.shadowRoot.querySelector('label.slds-form-element__label');
+            expect(label).toBeFalsy();
+        });
+    });
+
+    it('showLabel and hideLabel are inversely related', () => {
+        const element = createElement('c-expandable-text-area', {
+            is: ExpandableTextArea
+        });
+        document.body.appendChild(element);
+
+        element.showLabel = true;
+        expect(element.hideLabel).toBe(false);
+
+        element.showLabel = false;
+        expect(element.hideLabel).toBe(true);
+
+        element.hideLabel = false;
+        expect(element.showLabel).toBe(true);
+
+        element.hideLabel = true;
+        expect(element.showLabel).toBe(false);
     });
 });
