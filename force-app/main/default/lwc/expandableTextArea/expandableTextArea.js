@@ -4,6 +4,10 @@ import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import { getObjectInfo } from 'lightning/uiObjectInfoApi';
 import { FlowAttributeChangeEvent } from 'lightning/flowSupport';
 
+console.log('============================================');
+console.log('[expandableTextArea] MODULE LOADED - Component file is being used');
+console.log('============================================');
+
 export default class ExpandableTextArea extends LightningElement {
     @api recordId;
     @api objectApiName;
@@ -14,8 +18,14 @@ export default class ExpandableTextArea extends LightningElement {
     @api maxHeight = 0;
     @api autoExpand = false;
     @api readOnly = false;
-    @api showLabel = false;
+    @api showLabel;
     @api required = false;
+    
+    @api availableActions = [];
+    @api screenHelpText;
+    @api navigateFlow;
+    @api ariaDescribedBy;
+    @api ariaLabel;
     
     @track internalIsValid = false;
     @track internalFieldValue = '';
@@ -23,12 +33,17 @@ export default class ExpandableTextArea extends LightningElement {
     @track fieldLabel = '';
     @track fieldInfo = null;
     @track error = null;
+    @track validationError = '';
+    @track externalValidationError = '';
+    @track hasUserInteracted = false;
     isLoading = true;
+    hasInitializedHeight = false;
     
     get fieldToFetch() {
-        return this.objectApiName && this.fieldApiName 
-            ? `${this.objectApiName}.${this.fieldApiName}` 
-            : null;
+        if (!this.objectApiName || !this.fieldApiName) {
+            return [];
+        }
+        return [`${this.objectApiName}.${this.fieldApiName}`];
     }
     
     @wire(getObjectInfo, { objectApiName: '$objectApiName' })
@@ -45,14 +60,30 @@ export default class ExpandableTextArea extends LightningElement {
         }
     }
     
-    @wire(getRecord, { 
-        recordId: '$recordId', 
-        fields: ['$fieldToFetch'] 
+    @wire(getRecord, {
+        recordId: '$recordId',
+        fields: '$fieldToFetch'
     })
     wiredRecord({ error, data }) {
         this.isLoading = false;
         if (data) {
-            this.currentValue = data.fields[this.fieldApiName]?.value || '';
+            const newValue = data.fields[this.fieldApiName]?.value || '';
+            console.log('[expandableTextArea] wiredRecord - newValue:', newValue);
+            console.log('[expandableTextArea] wiredRecord - newValue length:', newValue?.length);
+            
+            // Reset the flag if we're getting new content for the first time
+            if (newValue && newValue.length > 0 && !this.currentValue) {
+                console.log('[expandableTextArea] wiredRecord - resetting hasInitializedHeight because we have content now');
+                this.hasInitializedHeight = false;
+            }
+            
+            this.currentValue = newValue;
+            
+            // Trigger height adjustment when record data updates
+            const textarea = this.template.querySelector('textarea[data-id^="expandable-textarea"]');
+            if (textarea) {
+                this.adjustTextareaHeight(textarea);
+            }
             
             if (this.internalFieldValue !== this.currentValue) {
                 this.internalFieldValue = this.currentValue;
@@ -68,68 +99,72 @@ export default class ExpandableTextArea extends LightningElement {
             this.fieldLabel = this.label;
         }
         
-        if (!this.recordId && this.fieldValue) {
-            this.currentValue = this.fieldValue;
+        if (!this.recordId) {
+            if (this.fieldValue) {
+                this.currentValue = this.fieldValue;
+            }
             this.isLoading = false;
         }
         
-        this.applyHeightStyling();
+        this.hasUserInteracted = false;
     }
     
     renderedCallback() {
-        if (this.autoExpand && this.currentValue) {
-            this.adjustHeight();
+        if (!this.hasInitializedHeight) {
+            const textarea = this.template.querySelector('textarea[data-id^="expandable-textarea"]');
+            if (textarea) {
+                this.hasInitializedHeight = true;
+                this.adjustTextareaHeight(textarea);
+            }
         }
+    }
+    
+    adjustTextareaHeight(textarea) {
+        if (!textarea) return;
+        
+        textarea.style.overflowY = 'hidden';
+        textarea.style.height = 'auto';
+        
+        const scrollHeight = textarea.scrollHeight;
+        const desiredHeight = this.autoExpand ? scrollHeight : this.initialHeight;
+        
+        const calculatedHeight = Math.max(
+            this.minHeight,
+            this.maxHeight > 0 ? Math.min(desiredHeight, this.maxHeight) : desiredHeight
+        );
+        
+        textarea.style.height = calculatedHeight + 'px';
+        
+        // Set overflow when content exceeds calculated height
+        if (textarea.scrollHeight > calculatedHeight) {
+            textarea.style.overflowY = 'auto';
+        }
+    }
+    
+    handleInput(event) {
+        const value = event.target.value;
+        const textarea = event.target;
+        this.hasUserInteracted = true;
+        
+        this.currentValue = value;
+        this.internalFieldValue = value;
+        
+        this.adjustTextareaHeight(textarea);
+        this.notifyFlow();
     }
     
     handleChange(event) {
         this.currentValue = event.target.value;
-        
         this.internalFieldValue = this.currentValue;
-        this.notifyFlow();
-        
-        if (this.autoExpand) {
-            this.adjustHeight(event);
-        }
         
         this.validateField();
     }
     
     handleBlur() {
-        if (this.recordId && !this.readOnly) {
-            this.saveField();
-        }
-        
         this.validateField();
-    }
-    
-    applyHeightStyling() {
-        const style = document.createElement('style');
-        style.textContent = `
-            .configurable-textarea {
-                --slds-c-textarea-sizing-min-height: ${this.minHeight}px;
-                --slds-c-textarea-sizing-height: ${this.initialHeight}px;
-                ${this.maxHeight > 0 ? `--slds-c-textarea-sizing-max-height: ${this.maxHeight}px;` : ''}
-            }
-        `;
-        this.template.appendChild(style);
-    }
-    
-    adjustHeight(event) {
-        const textarea = event ? event.target : this.template.querySelector('lightning-textarea');
-        if (textarea) {
-            const textareaElement = textarea.querySelector('textarea');
-            if (textareaElement) {
-                textareaElement.style.height = 'auto';
-                const newHeight = Math.max(
-                    this.minHeight,
-                    Math.min(
-                        textareaElement.scrollHeight,
-                        this.maxHeight > 0 ? this.maxHeight : Infinity
-                    )
-                );
-                textareaElement.style.height = newHeight + 'px';
-            }
+        
+        if (this.recordId && !this.isReadOnlyComputed && this.internalIsValid) {
+            this.saveField();
         }
     }
     
@@ -147,12 +182,33 @@ export default class ExpandableTextArea extends LightningElement {
         }
     }
     
-    validateField() {
-        const textarea = this.template.querySelector('lightning-textarea');
-        if (textarea) {
-            this.internalIsValid = textarea.reportValidity();
-            this.notifyFlow();
+    performValidation(value) {
+        if (this.readOnly) {
+            return { isValid: true, errorMessage: '' };
         }
+        
+        if (this.isRequired && (!value || value.trim() === '')) {
+            return { isValid: false, errorMessage: 'Complete this required field.' };
+        }
+        
+        if (value && value.length > this.maxLengthValue) {
+            return {
+                isValid: false,
+                errorMessage: `Value exceeds maximum length of ${this.maxLengthValue} characters.`
+            };
+        }
+        
+        return { isValid: true, errorMessage: '' };
+    }
+    
+    validateField() {
+        const currentValue = this.recordId ? this.currentValue : this.internalFieldValue;
+        
+        const result = this.performValidation(currentValue);
+        this.validationError = result.errorMessage;
+        this.internalIsValid = result.isValid && !this.externalValidationError;
+        this.notifyFlow();
+        
         return this.internalIsValid;
     }
     
@@ -178,16 +234,26 @@ export default class ExpandableTextArea extends LightningElement {
     }
     
     @api validate() {
-        const isValid = this.validateField();
+        this.validateField();
         
-        if (isValid) {
+        if (this.internalIsValid) {
             return { isValid: true };
         }
         
         return {
             isValid: false,
-            errorMessage: 'Please complete this required field.'
+            errorMessage: this.computedErrorMessage
         };
+    }
+    
+    @api setCustomValidity(externalMessage) {
+        this.externalValidationError = externalMessage || '';
+    }
+    
+    @api reportValidity() {
+        this.hasUserInteracted = true;
+        this.validateField();
+        return this.internalIsValid;
     }
     
     @api
@@ -198,6 +264,15 @@ export default class ExpandableTextArea extends LightningElement {
     set fieldValue(value) {
         this.internalFieldValue = value;
         this.currentValue = value;
+        this.validationError = '';
+        this.externalValidationError = '';
+        
+        const textarea = this.template.querySelector('textarea[data-id^="expandable-textarea"]');
+        if (textarea) {
+            this.adjustTextareaHeight(textarea);
+        }
+        
+        this.validateField();
     }
     
     @api
@@ -209,12 +284,15 @@ export default class ExpandableTextArea extends LightningElement {
         return this.showLabel ? (this.fieldLabel || this.label || 'Field') : '';
     }
     
-    get textareaClass() {
-        return `configurable-textarea ${this.autoExpand ? 'auto-expand' : ''}`;
+    get computedAriaLabel() {
+        if (this.ariaLabel) {
+            return this.ariaLabel;
+        }
+        return !this.showLabel ? (this.fieldLabel || this.label || 'Field') : undefined;
     }
     
-    get isFieldAccessible() {
-        return this.fieldInfo?.updateable || !this.readOnly;
+    get isReadOnlyComputed() {
+        return this.readOnly || (this.fieldInfo && !this.fieldInfo.updateable);
     }
     
     get isRequired() {
@@ -223,5 +301,29 @@ export default class ExpandableTextArea extends LightningElement {
     
     get maxLengthValue() {
         return this.fieldInfo?.length || 131072;
+    }
+    
+    get hasError() {
+        return !!this.validationError || !!this.externalValidationError;
+    }
+    
+    get computedErrorMessage() {
+        return this.externalValidationError || this.validationError;
+    }
+    
+    get formElementClass() {
+        return 'slds-form-element' + (this.hasError ? ' slds-has-error' : '');
+    }
+    
+    get isInvalid() {
+        return this.hasError;
+    }
+    
+    get errorHelpId() {
+        return this.recordId ? 'error-with-record' : 'error-flow';
+    }
+    
+    get computedAriaDescribedBy() {
+        return this.ariaDescribedBy || (this.hasError ? this.errorHelpId : undefined);
     }
 }

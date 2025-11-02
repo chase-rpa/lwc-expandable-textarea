@@ -46,12 +46,15 @@ This creates a frustrating user experience, especially for:
 
 Administrators can configure the component at design time to set the initial height, enable auto-expansion, and customize the user experience.
 
+**Technical Note**: The component uses a native HTML `<textarea>` element styled with SLDS classes, providing full control over height while maintaining Salesforce design consistency. This approach was chosen over `lightning-textarea` to avoid Shadow DOM limitations that prevent reliable height control.
+
 ## ✨ Features
 
 ### Core Functionality
 - 📏 **Configurable Height** - Set initial, minimum, and maximum height in pixels
 - 🔄 **Auto-Expansion** - Optionally grow automatically as users type
 - 🎯 **Universal Field Support** - Works with any text or long text area field
+- 🎯 **Native Textarea Implementation** - Direct height control without Shadow DOM limitations
 - 🔒 **Respects Security** - Honors Field Level Security (FLS) and sharing rules
 - 💾 **Auto-Save** - Automatically saves changes on blur (record pages)
 - ✅ **Validation Support** - Required field validation and character limits
@@ -66,7 +69,6 @@ Administrators can configure the component at design time to set the initial hei
 ### User Experience
 - 🏷️ **Custom Labels** - Override default field labels
 - 👁️ **Read-Only Mode** - Display content without editing capability
-- 🔢 **Character Counter** - Optional character count display
 - 🎨 **SLDS Styling** - Consistent with Salesforce Lightning Design System
 - ⚡ **Fast Performance** - Uses Lightning Data Service (no Apex required)
 
@@ -347,11 +349,12 @@ Max Height: 600
 
 ### Architecture
 
-The component uses **Lightning Data Service (LDS)** for all data operations:
+The component uses **Lightning Data Service (LDS)** for all data operations and a **native textarea element** for direct height control:
 - ✅ No Apex required
 - ✅ Automatic FLS/CRUD respect
 - ✅ Client-side caching for performance
 - ✅ Automatic record updates and refreshes
+- ✅ Native `<textarea>` with SLDS styling for full height control
 
 ### Data Flow
 
@@ -361,49 +364,93 @@ The component uses **Lightning Data Service (LDS)** for all data operations:
 └────────┬─────────┘
          │
          ↓ (LDS)
-┌──────────────────┐
-│  LWC Component   │
-│  - getRecord     │
-│  - updateRecord  │
-│  - getObjectInfo │
-└────────┬─────────┘
+┌──────────────────────────────┐
+│  LWC Component               │
+│  - getRecord()               │
+│  - updateRecord()            │
+│  - getObjectInfo()           │
+└────────┬─────────────────────┘
          │
          ↓ (User Interface)
-┌──────────────────┐
-│   lightning-     │
-│    textarea      │
-└──────────────────┘
+┌──────────────────────────────┐
+│  Native <textarea>           │
+│  class="slds-textarea"       │
+└──────────────────────────────┘
 ```
 
-### Height Control Methods
+### Height Control Implementation
 
-The component supports multiple height control methods:
+The component uses direct `scrollHeight` manipulation for accurate, reliable height control:
 
-#### 1. CSS Styling Hooks (Primary Method)
-```css
-:host {
-  --slds-c-textarea-sizing-min-height: 200px;
-  --slds-c-textarea-sizing-height: 300px;
-  --slds-c-textarea-sizing-max-height: 600px;
-}
-```
+#### Primary Method: Direct scrollHeight Manipulation
 
-#### 2. Dynamic JavaScript Adjustment
-```javascript
-adjustHeight(event) {
-  const textarea = event.target;
-  textarea.style.height = 'auto';
-  textarea.style.height = textarea.scrollHeight + 'px';
-}
-```
+**Method**: `adjustTextareaHeight(textarea)`
 
-#### 3. CSS Class Application
-```css
-.expandable-textarea textarea {
-  height: 300px;
-  min-height: 150px;
-}
-```
+The core height calculation method:
+1. Resets height: `textarea.style.height = 'auto'`
+2. Reads actual content height: `scrollHeight = textarea.scrollHeight`
+3. Applies constraints:
+   ```javascript
+   const calculatedHeight = Math.max(
+       this.minHeight,
+       this.maxHeight > 0 ? Math.min(scrollHeight, this.maxHeight) : scrollHeight
+   );
+   ```
+4. Sets final height: `textarea.style.height = calculatedHeight + 'px'`
+5. Manages overflow: Sets `overflow-y` to 'auto' when content exceeds max height, otherwise 'hidden'
+
+#### Real-time Auto-Grow
+
+**Method**: `handleInput(event)`
+
+Provides smooth auto-expansion as users type:
+- Captures every keystroke via the `input` event
+- Updates internal `currentValue` with new content
+- Calls `adjustTextareaHeight(event.target)` for immediate height adjustment
+- Notifies Flow of value changes via `FlowAttributeChangeEvent`
+- Only active when `autoExpand` property is enabled
+
+#### Initial Height Setup
+
+**Method**: `renderedCallback()`
+
+Sets correct height when component loads with existing content:
+- Uses `hasInitializedHeight` flag to run only once
+- Finds the native textarea element via `querySelector('.slds-textarea')`
+- Calls `adjustTextareaHeight()` to calculate and apply proper height
+- Prevents infinite render loops with initialization flag
+
+### Validation System
+
+The component implements manual validation with full Flow integration:
+
+#### Field Validation Logic
+
+**Method**: `performValidation(value)`
+
+Validates field content:
+- **Required Field Check**: Detects empty or whitespace-only values
+- **Max-Length Check**: Enforces field length limits from object metadata
+- Returns: `{ isValid: boolean, errorMessage: string }`
+
+#### Error Display
+
+**Method**: `validateField()`
+
+Orchestrates validation and UI updates:
+- Calls `performValidation()` to check field validity
+- Updates SLDS error styling with `.slds-has-error` class
+- Displays error messages via `.slds-form-element__help` element
+- Sets accessibility attributes: `aria-invalid`, `aria-describedby`
+- Notifies Flow of validation state changes
+
+#### Flow Integration APIs
+
+The component provides standard Flow validation APIs:
+- `@api validate()` - Called when user clicks Next/Finish in Flow
+- `@api setCustomValidity()` - Sets custom error messages
+- `@api reportValidity()` - Reports validation state to Flow
+- `@api isValid` - Output property for validation state
 
 ### Browser Compatibility
 
@@ -523,39 +570,25 @@ sf org open
 
 ## 📞 Support
 
-### Documentation
+This component is provided free by Redpoint Ascent. Community support via GitHub issues/discussions is available. Professional support with SLAs requires a commercial agreement.
 
-- [Installation Guide](docs/installation.md)
-- [Configuration Guide](docs/configuration.md)
-- [Troubleshooting Guide](docs/troubleshooting.md)
-- [API Reference](docs/api-reference.md)
-
-### Get Help
+### Community Support (Best-Effort)
 
 - 🐛 **Bug Reports**: [Open an issue](https://github.com/redpoint-ascent/lwc-expandable-textarea/issues/new?template=bug_report.md)
 - 💡 **Feature Requests**: [Open an issue](https://github.com/redpoint-ascent/lwc-expandable-textarea/issues/new?template=feature_request.md)
 - ❓ **Questions**: [Discussions](https://github.com/redpoint-ascent/lwc-expandable-textarea/discussions)
-- 💬 **Community**: [Salesforce Stack Exchange](https://salesforce.stackexchange.com/)
-- 📧 **Professional Support**: [hello@redpoint-ascent.ai](mailto:hello@redpoint-ascent.ai)
 
-### Commercial Support
+### Professional Support with SLAs
 
-Need guaranteed response times, priority bug fixes, or custom development?  
-**Redpoint Ascent** offers commercial support packages for organizations:
-
-- 🎯 Priority support with SLA
-- 🔧 Custom feature development
-- 📚 Training and best practices consulting
-- 🚀 Implementation assistance
-
-Contact [hello@redpoint-ascent.ai](mailto:hello@redpoint-ascent.ai) for pricing.
+Guaranteed response times, priority bug fixes, and custom development require a commercial agreement.
+Contact: [hello@redpoint-ascent.ai](mailto:hello@redpoint-ascent.ai)
 
 ### Known Issues
 
 | Issue | Workaround | Status |
 |-------|-----------|--------|
 | LWR3008 error after deployment | Republish LWR site | Expected behavior |
-| Component re-initialization in flows | Use session storage for state | Documented |
+| Component re-initialization in flows | Flow variables preserve state | Documented |
 | Rich text fields display as HTML | Component designed for plain text | By design |
 
 ## 📄 License
@@ -609,14 +642,14 @@ SOFTWARE.
 
 ## 🗺️ Roadmap
 
-- [ ] Rich text support with formatting preservation
 - [ ] Character counter with warnings
 - [ ] Word count display
+- [ ] Rich text support with formatting preservation
 - [ ] Auto-save with debouncing
 - [ ] Field history integration
 - [ ] Multi-language support
-- [ ] Dark mode styling
-- [ ] Custom validation rules
+- [ ] Dark mode styling optimization
+- [ ] Custom validation rules via configuration
 
 ## 📈 Stats
 

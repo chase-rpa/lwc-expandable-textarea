@@ -1,27 +1,46 @@
-.configurable-textarea {
+.expandable-textarea-container {
     width: 100%;
 }
 
-.auto-expand {
-    overflow: hidden;
+textarea.slds-textarea {
     resize: none;
-}
-
-.configurable-textarea {
-    --slds-c-textarea-sizing-min-height: 100px;
-    --slds-c-textarea-sizing-height: 200px;
+    line-height: 1.5;
+    box-sizing: border-box;
+    transition: height 0.1s ease;
 }
 
 .slds-box {
     padding: 0;
 }
 
-@media (max-width: 768px) {
-    .configurable-textarea {
-        --slds-c-textarea-sizing-min-height: 80px;
-    }
+
+textarea.slds-textarea:disabled {
+    background-color: #f3f3f3;
+    cursor: not-allowed;
+    color: var(--slds-g-color-neutral-base-50, #706e6b);
+    border-color: var(--slds-g-color-border-base-1, #c9c9c9);
 }
 
-lightning-textarea[disabled] {
-    background-color: #f3f3f3;
+.slds-form-element__help {
+    color: var(--slds-g-color-error-base-40, #ea001e);
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+    line-height: 1.5;
+}
+
+.slds-has-error .slds-textarea {
+    border-color: var(--slds-g-color-error-base-40, #ea001e);
+    border-width: 2px;
+    background-color: var(--slds-g-color-error-base-95, #feded8);
+}
+
+textarea.slds-textarea:focus {
+    outline: 0;
+    border-color: var(--slds-g-color-brand-base-60, #0176d3);
+    box-shadow: 0 0 3px var(--slds-g-color-brand-base-60, #0176d3);
+}
+
+.slds-has-error textarea.slds-textarea:focus {
+    border-color: var(--slds-g-color-error-base-40, #ea001e);
+    box-shadow: 0 0 3px var(--slds-g-color-error-base-40, #ea001e);
 }

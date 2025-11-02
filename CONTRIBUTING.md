@@ -22,7 +22,7 @@ This project adheres to a Code of Conduct that all contributors are expected to 
 ### Our Standards
 
 **Examples of behavior that contributes to a positive environment:**
-- Using welcoming and inclusive language
+- Using welcoming language
 - Being respectful of differing viewpoints and experiences
 - Gracefully accepting constructive criticism
 - Focusing on what is best for the community
@@ -365,25 +365,16 @@ We love new ideas! Please use the [feature request template](https://github.com/
 
 ## ❓ Questions
 
-Have questions? Here's how to get help:
+### Free Community Support (Best-Effort)
 
-### For General Questions
 - 💬 Start a [GitHub Discussion](https://github.com/redpoint-ascent/lwc-expandable-textarea/discussions)
 - 📚 Check the [documentation](docs/)
 - 🔍 Search [existing issues](https://github.com/redpoint-ascent/lwc-expandable-textarea/issues)
 
-### For Technical Support
-- 📧 Email: [hello@redpoint-ascent.ai](mailto:hello@redpoint-ascent.ai)
-- 🌐 Visit: [redpoint-ascent.ai](https://redpoint-ascent.ai)
+### Professional Support with SLAs
 
-### For Commercial Support
-Redpoint Ascent offers commercial support for organizations that need:
-- Priority bug fixes
-- Custom feature development
-- Implementation assistance
-- Training and consulting
-
-Contact [hello@redpoint-ascent.ai](mailto:hello@redpoint-ascent.ai) for details.
+Guaranteed response times and commercial engagement available.
+Contact: [hello@redpoint-ascent.ai](mailto:hello@redpoint-ascent.ai)
 
 ## 🏆 Recognition
 
@@ -408,4 +399,4 @@ Your contributions make this project better for everyone in the Salesforce commu
 ---
 
 **Maintained by [Redpoint Ascent](https://redpoint-ascent.ai)**  
-*Building better Salesforce experiences through open source*
+*Building better Salesforce experiences*
