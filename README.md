@@ -1,7 +1,7 @@
 # Expandable Text Area for Salesforce
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Salesforce API](https://img.shields.io/badge/Salesforce%20API-v59.0-blue.svg)](https://developer.salesforce.com/)
+[![Salesforce API](https://img.shields.io/badge/Salesforce%20API-v65.0-blue.svg)](https://developer.salesforce.com/)
 [![Lightning Web Components](https://img.shields.io/badge/LWC-Enabled-brightgreen.svg)](https://developer.salesforce.com/docs/component-library/documentation/en/lwc)
 
 > A configurable Lightning Web Component that displays Salesforce text fields with expandable height on Lightning Record Pages and Flow Screens. **Solves the 3-line text field limitation.**
@@ -74,33 +74,23 @@ Administrators can configure the component at design time to set the initial hei
 
 ## 📸 Screenshots
 
-### Before (Standard Text Field - 3 Lines)
-```
-┌─────────────────────────────────┐
-│ Description                     │
-├─────────────────────────────────┤
-│ This is a long description th..│ ← Only 3 lines visible
-│ at contains important informa..│    Must scroll to see more!
-│ tion about the record that...  │
-└─────────────────────────────────┘
-```
+### Flow Screen Demo
 
-### After (Expandable Text Area - Configurable)
-```
-┌─────────────────────────────────┐
-│ Description                     │
-├─────────────────────────────────┤
-│ This is a long description that │
-│ contains important information  │
-│ about the record that users     │
-│ need to see at a glance. With   │
-│ the expandable text area, all   │ ← All content visible!
-│ content is immediately visible  │    No scrolling needed!
-│ without scrolling. Users can    │
-│ read and edit comfortably.      │
-│                                 │
-└─────────────────────────────────┘
-```
+Watch the component in action within a Salesforce Flow, updating a `Notes__c` field on a Contact record:
+
+![Flow Demo](.github/media/lwc-expandable-textarea-demo.gif)
+
+### Component in Lightning Record Page
+
+The expandable text area providing enhanced visibility for long text fields:
+
+![Screenshot 1](.github/media/lwc-expandable-textarea-screenshot1.png)
+
+### Configuration Options
+
+Easy-to-configure properties for customizing the component behavior:
+
+![Screenshot 2](.github/media/lwc-expandable-textarea-screenshot2.png)
 
 ## 🚀 Installation
 
@@ -196,7 +186,8 @@ sf package install --package 04t... --target-org myorg
 - 🔀 **Flow Automation & Optimization** - Streamline complex business processes
 - 🎨 **User Experience Improvements** - Make Salesforce easier for your users
 - ⚡ **Performance Optimization** - Fast, efficient, scalable solutions
-- 🔧 **Custom Salesforce Solutions** - From concept to deployment
+- 📦 **AppExchange Managed Packages** - Building and publishing packages on Salesforce AppExchange
+- � **Custom Salesforce Solutions** - From concept to deployment
 
 ### Need Help?
 
@@ -226,7 +217,6 @@ sf package install --package 04t... --target-org myorg
 | `maxHeight` | Integer | No | 0 | Maximum height (0 = unlimited) |
 | `autoExpand` | Boolean | No | true | Automatically expand as content grows |
 | `readOnly` | Boolean | No | false | Display as read-only (no editing) |
-| `showLabel` | Boolean | No | true | Show/hide the field label |
 | `required` | Boolean | No | false | Override field's required setting |
 
 **\*Auto-populated on Lightning Record Pages, must be set manually in Flows**

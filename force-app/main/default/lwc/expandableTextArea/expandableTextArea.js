@@ -28,16 +28,7 @@ export default class ExpandableTextArea extends LightningElement {
     }
     
     set hideLabel(value) {
-        this._hideLabel = value;
-    }
-    
-    @api
-    get showLabel() {
-        return !this._hideLabel;
-    }
-    
-    set showLabel(value) {
-        this._hideLabel = !value;
+        this._hideLabel = value === true || (typeof value === 'string' && value.toLowerCase() === 'true');
     }
     
     @api availableActions = [];
