@@ -221,7 +221,6 @@ junit/
 Thumbs.db
 
 # Salesforce DX Project Specific
-config/
 tools/
 force-app/test/
 

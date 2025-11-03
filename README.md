@@ -226,7 +226,6 @@ sf package install --package 04t... --target-org myorg
 | `maxHeight` | Integer | No | 0 | Maximum height (0 = unlimited) |
 | `autoExpand` | Boolean | No | true | Automatically expand as content grows |
 | `readOnly` | Boolean | No | false | Display as read-only (no editing) |
-| `showLabel` | Boolean | No | true | Show/hide the field label |
 | `required` | Boolean | No | false | Override field's required setting |
 
 **\*Auto-populated on Lightning Record Pages, must be set manually in Flows**
