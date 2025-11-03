@@ -24,7 +24,7 @@ If applicable, add screenshots to help explain your problem.
 
 **Environment:**
 - Salesforce Edition: [e.g., Enterprise, Developer]
-- API Version: [e.g., 59.0]
+- API Version: [e.g., 65.0]
 - Browser: [e.g., Chrome 120]
 - Component Version: [e.g., 1.0.0]
 

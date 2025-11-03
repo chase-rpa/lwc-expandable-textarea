@@ -97,7 +97,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Validation Support**: Required field validation and character limits
 
 ### Technical Details
-- API Version: 59.0
+- API Version: 65.0
 - Framework: Lightning Web Components
 - Data Layer: Lightning Data Service (LDS)
 - Styling: Salesforce Lightning Design System (SLDS)
